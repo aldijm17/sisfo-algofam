@@ -1,0 +1,16 @@
+.logo {
+  font-family: monospace; /* ala coding */
+  font-size: 20px;
+  font-weight: bold;
+  color: #00ff88; /* warna neon coding */
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid #00ff88; /* kursor */
+  animation: blinkCursor 0.7s steps(1) infinite;
+}
+
+@keyframes blinkCursor {
+  50% {
+    border-color: transparent;
+  }
+}
