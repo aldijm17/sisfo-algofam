@@ -1,0 +1,981 @@
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoFam-25</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            width: 100%;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .main-temp {
+            color: white;
+            font-size: 4rem;
+            font-weight: 300;
+            margin: 20px 0 10px 0;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            color: #FFD700;
+            margin: 10px 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .location {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-small {
+            height: 100px;
+        }
+
+        .card-title {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+
+        /* Full width cards */
+        .card-full {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .forecast-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .forecast-item:last-child {
+            border-bottom: none;
+        }
+
+        .forecast-day {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .forecast-icon {
+            color: #FFD700;
+            font-size: 1.2rem;
+        }
+
+        .forecast-temps {
+            display: flex;
+            gap: 15px;
+            color: white;
+        }
+
+        .high-temp {
+            font-weight: 600;
+        }
+
+        .low-temp {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 8px;
+            backdrop-filter: blur(20px);
+            margin-top: 20px;
+            animation: slideUp 1s ease-out;
+        }
+
+        .nav-item {
+            flex: 1;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .nav-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Status indicator */
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        /* Task items */
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding-left: 10px;
+        }
+
+        .task-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .task-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .task-time {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        /* Schedule items */
+        .schedule-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-item:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .schedule-time {
+            color: #FFD700;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .schedule-course {
+            color: white;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .schedule-room {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Tab content */
+        .tab-content {
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Loading states */
+        .loading {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Progress bar */
+        .progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .main-temp {
+                font-size: 3rem;
+            }
+
+            .cards-grid {
+                gap: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-dot" id="statusDot"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <input type="text" class="search-bar" placeholder="Search courses, tasks..." id="searchBar">
+            
+            <div class="weather-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            
+            <div class="main-temp" id="mainStats">--</div>
+            <div class="location">AlgoFam Classroom</div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <button class="nav-item active" onclick="switchTab('overview')">Overview</button>
+            <button class="nav-item" onclick="switchTab('schedule')">Schedule</button>
+            <button class="nav-item" onclick="switchTab('tasks')">Tasks</button>
+            <button class="nav-item" onclick="switchTab('courses')">Courses</button>
+        </nav>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <!-- Main Stats Grid -->
+            <div class="cards-grid">
+                <div class="card card-small">
+                    <div class="card-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="card-title">Tasks</div>
+                    <div class="card-value" id="taskCount">--</div>
+                </div>
+
+                <div class="card card-small">
+                    <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="card-title">Today</div>
+                    <div class="card-value" id="todayCount">--</div>
+                </div>
+
+                <div class="card card-small">
+                    <div class="card-icon"><i class="fas fa-book"></i></div>
+                    <div class="card-title">Courses</div>
+                    <div class="card-value" id="courseCount">--</div>
+                </div>
+
+                <div class="card card-small">
+                    <div class="card-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="card-title">Progress</div>
+                    <div class="card-value" id="progressPercent">--</div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="card-full">
+                <div class="card-title">Today's Schedule</div>
+                <div id="todaySchedule">
+                    <div class="loading">Loading today's schedule...</div>
+                </div>
+            </div>
+
+            <!-- Pending Tasks -->
+            <div class="card-full">
+                <div class="card-title">Pending Tasks</div>
+                <div id="pendingTasksList">
+                    <div class="loading">Loading pending tasks...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Tab -->
+        <div id="schedule" class="tab-content">
+            <div class="card-full">
+                <div class="card-title">Weekly Schedule</div>
+                <div id="weeklySchedule">
+                    <div class="loading">Loading schedule data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Tab -->
+        <div id="tasks" class="tab-content">
+            <div class="card-full">
+                <div class="card-title">All Tasks</div>
+                <div id="allTasksList">
+                    <div class="loading">Loading tasks data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Tab -->
+        <div id="courses" class="tab-content">
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
+                    <div class="card-title">Programming</div>
+                    <div class="card-value" id="programmingCount">--</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-server"></i></div>
+                    <div class="card-title">Database</div>
+                    <div class="card-value" id="databaseCount">--</div>
+                </div>
+            </div>
+
+            <div class="card-full">
+                <div class="card-title">Enrolled Courses</div>
+                <div id="enrolledCourses">
+                    <div class="loading">Loading enrolled courses...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDrXnTenv-nXC8AOgHePOuQZUOXnYUvhlk",
+            authDomain: "matkul-1c.firebaseapp.com",
+            projectId: "matkul-1c",
+            storageBucket: "matkul-1c.appspot.com",
+            messagingSenderId: "538741250564",
+            appId: "1:538741250564:web:c71c03f93b7ba0e607b351"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Global data
+        let scheduleData = [];
+        let tasksData = [];
+        let currentDay = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+            setupEventListeners();
+        });
+
+        async function loadAllData() {
+            try {
+                // Load schedule data
+                const scheduleSnapshot = await getDocs(collection(db, "jadwal"));
+                scheduleData = [];
+                scheduleSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    scheduleData.push({
+                        id: doc.id,
+                        mata_kuliah: data.matkul || '',
+                        dosen: data.dosen || '',
+                        hari: data.hari || '',
+                        waktu_masuk: data.waktu_masuk || '00:00',
+                        waktu_keluar: data.waktu_keluar || '00:00',
+                        ruang: data.ruang || 'TBA'
+                    });
+                });
+
+                // Load tasks data
+                const tasksSnapshot = await getDocs(collection(db, "tugas"));
+                tasksData = [];
+                tasksSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    tasksData.push({
+                        id: doc.id,
+                        tugas: data.tugas || '',
+                        deadline: data.deadline || '',
+                        matkul: data.matkul || '',
+                        dosen: data.dosen || '',
+                        catatan: data.catatan || '',
+                        status: data.status || 'belum',
+                        deskripsi: data.deskripsi || data.catatan || 'No description available'
+                    });
+                });
+
+                renderAllData();
+                updateOverview();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Failed to load data from Firebase');
+            }
+        }
+
+        function renderAllData() {
+            renderOverview();
+            renderSchedule();
+            renderTasks();
+            renderCourses();
+        }
+
+        function renderOverview() {
+            // Update stats
+            const pendingTasks = tasksData.filter(t => t.status === 'belum').length;
+            const todayClasses = scheduleData.filter(item => item.hari === currentDay).length;
+            const uniqueCourses = [...new Set([...scheduleData.map(s => s.mata_kuliah), ...tasksData.map(t => t.matkul)])].length;
+            
+            // Calculate progress
+            const totalTasks = tasksData.length;
+            const completedTasks = tasksData.filter(t => t.status === 'selesai').length;
+            const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            document.getElementById('taskCount').textContent = pendingTasks;
+            document.getElementById('todayCount').textContent = todayClasses;
+            document.getElementById('courseCount').textContent = uniqueCourses;
+            document.getElementById('progressPercent').textContent = progress + '%';
+            
+            // Render today's schedule
+            const todayScheduleContainer = document.getElementById('todaySchedule');
+            const todayClassesData = scheduleData.filter(item => item.hari === currentDay);
+            
+            if (todayClassesData.length === 0) {
+                todayScheduleContainer.innerHTML = '<div class="schedule-item">No classes scheduled for today</div>';
+            } else {
+                todayScheduleContainer.innerHTML = todayClassesData.map(item => `
+                    <div class="schedule-item">
+                        <div class="schedule-time">${item.waktu_masuk} - ${item.waktu_keluar}</div>
+                        <div class="schedule-course">${item.mata_kuliah}</div>
+                        <div class="schedule-room">${item.ruang} • ${item.dosen}</div>
+                    </div>
+                `).join('');
+            }
+            
+            // Render pending tasks
+            const pendingTasksContainer = document.getElementById('pendingTasksList');
+            const pendingTasksData = tasksData
+                .filter(task => task.status === 'belum')
+                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+                .slice(0, 3); // Show only next 3 pending tasks
+            
+            if (pendingTasksData.length === 0) {
+                pendingTasksContainer.innerHTML = '<div class="task-item">All tasks completed! Great work</div>';
+            } else {
+                pendingTasksContainer.innerHTML = pendingTasksData.map(task => {
+                    const deadline = new Date(task.deadline);
+                    const now = new Date();
+                    const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+                    
+                    let actionText = `${daysLeft}d left`;
+                    if (daysLeft < 0) {
+                        actionText = `${Math.abs(daysLeft)}d overdue`;
+                    } else if (daysLeft === 0) {
+                        actionText = 'due today';
+                    }
+                    
+                    return `
+                        <div class="task-item">
+                            <div class="task-icon"><i class="fas fa-code"></i></div>
+                            <div class="task-info">
+                                <div class="task-title">${task.tugas}</div>
+                                <div class="task-subtitle">${task.matkul} • ${task.dosen}</div>
+                                <div class="task-time">Due: ${task.deadline}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('weeklySchedule');
+            
+            if (scheduleData.length === 0) {
+                container.innerHTML = '<div class="schedule-item">No schedule data found</div>';
+                return;
+            }
+
+            // Sort by day and time
+            const dayOrder = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+            const sortedData = [...scheduleData].sort((a, b) => {
+                const dayDiff = dayOrder.indexOf(a.hari) - dayOrder.indexOf(b.hari);
+                if (dayDiff !== 0) return dayDiff;
+                return a.waktu_masuk.localeCompare(b.waktu_masuk);
+            });
+
+            container.innerHTML = sortedData.map(item => `
+                <div class="schedule-item">
+                    <div class="schedule-time">${item.waktu_masuk} - ${item.waktu_keluar}</div>
+                    <div class="schedule-course">${item.mata_kuliah}</div>
+                    <div class="schedule-room">${item.hari} • ${item.ruang} • ${item.dosen}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('allTasksList');
+            
+            if (tasksData.length === 0) {
+                container.innerHTML = '<div class="task-item">No tasks found</div>';
+                return;
+            }
+
+            // Sort by deadline and status
+            const sortedTasks = [...tasksData].sort((a, b) => {
+                if (a.status !== b.status) {
+                    return a.status === 'belum' ? -1 : 1;
+                }
+                return new Date(a.deadline) - new Date(b.deadline);
+            });
+
+            container.innerHTML = sortedTasks.map(task => {
+                const isCompleted = task.status === 'selesai';
+                const deadline = new Date(task.deadline);
+                const now = new Date();
+                const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+                
+                let actionText = `${daysLeft}d left`;
+                if (daysLeft < 0) {
+                    actionText = `${Math.abs(daysLeft)}d overdue`;
+                } else if (daysLeft === 0) {
+                    actionText = 'due today';
+                }
+                
+                return `
+                    <div class="task-item ${isCompleted ? 'task-completed' : ''}">
+                        <div class="task-icon"><i class="fas fa-code"></i></div>
+                        <div class="task-info">
+                            <div class="task-title">${task.tugas}</div>
+                            <div class="task-subtitle">${task.matkul} • ${task.dosen}</div>
+                            <div class="task-time">Due: ${task.deadline} • ${isCompleted ? 'Completed' : actionText}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderCourses() {
+            const container = document.getElementById('enrolledCourses');
+            
+            // Extract unique courses from schedule and tasks
+            const coursesFromSchedule = [...new Set(scheduleData.map(s => s.mata_kuliah))];
+            const coursesFromTasks = [...new Set(tasksData.map(t => t.matkul))];
+            const allCourses = [...new Set([...coursesFromSchedule, ...coursesFromTasks])];
+
+            if (allCourses.length === 0) {
+                container.innerHTML = '<div class="task-item">No courses found</div>';
+                return;
+            }
+
+            // Count programming and database courses (simple categorization)
+            const programmingCourses = allCourses.filter(course => 
+                course.toLowerCase().includes('programming') || 
+                course.toLowerCase().includes('algorithm') ||
+                course.toLowerCase().includes('web') ||
+                course.toLowerCase().includes('mobile')
+            ).length;
+            
+            const databaseCourses = allCourses.filter(course => 
+                course.toLowerCase().includes('database') || 
+                course.toLowerCase().includes('sql')
+            ).length;
+            
+            document.getElementById('programmingCount').textContent = programmingCourses + ' courses';
+            document.getElementById('databaseCount').textContent = databaseCourses + ' courses';
+
+            container.innerHTML = allCourses.map(course => {
+                const scheduleCount = scheduleData.filter(s => s.mata_kuliah === course).length;
+                const taskCount = tasksData.filter(t => t.matkul === course && t.status === 'belum').length;
+                const instructor = scheduleData.find(s => s.mata_kuliah === course)?.dosen || 
+                                tasksData.find(t => t.matkul === course)?.dosen || 'TBA';
+
+                return `
+                    <div class="task-item">
+                        <div class="task-icon"><i class="fas fa-book"></i></div>
+                        <div class="task-info">
+                            <div class="task-title">${course}</div>
+                            <div class="task-subtitle">${instructor} • ${scheduleCount} sessions/week</div>
+                            <div class="task-time">${taskCount} pending tasks</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateOverview() {
+            const pendingTasks = tasksData.filter(t => t.status === 'belum').length;
+            const todayClasses = scheduleData.filter(item => item.hari === currentDay).length;
+            
+            // Update main stats based on active tab
+            const activeTab = document.querySelector('.nav-item.active').getAttribute('onclick');
+            if (activeTab.includes('overview')) {
+                document.getElementById('mainStats').textContent = todayClasses > 0 ? todayClasses : '0';
+                document.querySelector('.weather-icon i').className = 'fas fa-calendar-alt';
+            }
+        }
+
+        function setupEventListeners() {
+            // Setup real-time listeners for data changes
+            onSnapshot(collection(db, "jadwal"), (snapshot) => {
+                scheduleData = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    scheduleData.push({
+                        id: doc.id,
+                        mata_kuliah: data.matkul || '',
+                        dosen: data.dosen || '',
+                        hari: data.hari || '',
+                        waktu_masuk: data.waktu_masuk || '00:00',
+                        waktu_keluar: data.waktu_keluar || '00:00',
+                        ruang: data.ruang || 'TBA'
+                    });
+                });
+                
+                renderAllData();
+                updateOverview();
+            });
+
+            onSnapshot(collection(db, "tugas"), (snapshot) => {
+                tasksData = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    tasksData.push({
+                        id: doc.id,
+                        tugas: data.tugas || '',
+                        deadline: data.deadline || '',
+                        matkul: data.matkul || '',
+                        dosen: data.dosen || '',
+                        catatan: data.catatan || '',
+                        status: data.status || 'belum',
+                        deskripsi: data.deskripsi || data.catatan || 'No description available'
+                    });
+                });
+                
+                renderAllData();
+                updateOverview();
+            });
+        }
+
+        function showError(message) {
+            // Create a temporary error notification
+            const errorDiv = document.createElement('div');
+            errorDiv.textContent = message;
+            errorDiv.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                right: 20px;
+                background: #F44336;
+                color: white;
+                padding: 1rem;
+                border-radius: 4px;
+                z-index: 1000;
+                font-size: 0.9rem;
+                max-width: 300px;
+            `;
+            
+            document.body.appendChild(errorDiv);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 3000);
+        }
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+
+            // Update main stats based on tab
+            updateMainStats(tabName);
+        }
+
+        function updateMainStats(tab) {
+            const mainStats = document.getElementById('mainStats');
+            const icon = document.querySelector('.weather-icon i');
+            
+            switch(tab) {
+                case 'overview':
+                    const todayClasses = scheduleData.filter(item => item.hari === currentDay).length;
+                    mainStats.textContent = todayClasses > 0 ? todayClasses : '0';
+                    icon.className = 'fas fa-calendar-alt';
+                    break;
+                case 'schedule':
+                    mainStats.textContent = scheduleData.length;
+                    icon.className = 'fas fa-calendar-alt';
+                    break;
+                case 'tasks':
+                    const pendingTasks = tasksData.filter(t => t.status === 'belum').length;
+                    mainStats.textContent = pendingTasks;
+                    icon.className = 'fas fa-tasks';
+                    break;
+                case 'courses':
+                    const uniqueCourses = [...new Set([...scheduleData.map(s => s.mata_kuliah), ...tasksData.map(t => t.matkul)])].length;
+                    mainStats.textContent = uniqueCourses;
+                    icon.className = 'fas fa-book';
+                    break;
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchBar').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            // Add search effects
+            if (searchTerm.length > 0) {
+                this.style.transform = 'scale(1.02)';
+                this.style.background = 'rgba(255, 255, 255, 0.3)';
+                
+                // Filter functionality could be added here
+            } else {
+                this.style.transform = 'scale(1)';
+                this.style.background = 'rgba(255, 255, 255, 0.2)';
+            }
+        });
+
+        // Status indicator animation
+        function updateStatusIndicator() {
+            const dot = document.getElementById('statusDot');
+            dot.style.background = '#4CAF50';
+        }
+
+        // Add hover effects to cards
+        document.querySelectorAll('.card, .card-full').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusIndicator();
+            
+            // Add stagger animation to cards
+            document.querySelectorAll('.card, .card-full').forEach((card, index) => {
+                card.style.animationDelay = (index * 0.1) + 's';
+            });
+
+            // Parallax effect on scroll
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const header = document.querySelector('.header');
+                header.style.transform = `translateY(${scrolled * 0.5}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
