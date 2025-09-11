@@ -117,6 +117,10 @@
         <section id="tugas" class="tab-content">
             <div class="glass-card">
                 <h2 style="margin-bottom: 1rem; color: var(--accent-orange);">Daftar Tugas</h2>
+                <div id="tasksFilter" style="display:flex; gap:.5rem; margin-bottom:.75rem;">
+                    <button class="subtab-btn active" data-filter="all">Semua</button>
+                    <button class="subtab-btn" data-filter="recent">Tugas terbaru <span id="recentTasksCount" style="margin-left:.25rem; font-weight:600;"></span></button>
+                </div>
                 <div id="tasksList">
                     <div class="loading">Memuat tugas dari Firebase...</div>
                 </div>

@@ -22,6 +22,9 @@
         let currentTab = 'beranda';
         let currentView = 'main';
         let isScrolling = false;
+        let currentTasksFilter = 'all';
+        let knownTaskIds = new Set();
+        let recentTaskAddedAt = new Map();
 
         // Icon array for dynamic icon
         const icons = ['🚀', '💻', '📚', '⚡', '🎯', '🌟', '🔥', '💡'];
@@ -92,6 +95,20 @@
                     dot.classList.add('active');
                 });
             });
+
+            // Tasks sub-tab filter (Semua / Tugas terbaru)
+            const tasksFilter = document.getElementById('tasksFilter');
+            if (tasksFilter) {
+                tasksFilter.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.subtab-btn');
+                    if (!btn) return;
+                    const filter = btn.dataset.filter || 'all';
+                    currentTasksFilter = filter;
+                    tasksFilter.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderTasksList();
+                });
+            }
 
             setupRealtimeListeners();
         }
@@ -219,8 +236,13 @@
                     });
                 });
 
+                // tandai id awal supaya tidak dianggap baru
+                knownTaskIds = new Set(tasksData.map(t => t.id));
+                recentTaskAddedAt.clear();
+
                 updateConnectionStatus('connected');
                 renderAllData();
+                updateRecentBadge();
                 updateStatistics();
                 showToast('Data berhasil dimuat!', 'success');
 
@@ -256,10 +278,10 @@
 
             // Real-time listener for tasks changes
             onSnapshot(collection(db, "tugas"), (snapshot) => {
-                tasksData = [];
+                const nextTasks = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    tasksData.push({
+                    nextTasks.push({
                         id: doc.id,
                         tugas: data.tugas || '',
                         deadline: data.deadline || '',
@@ -270,11 +292,23 @@
                         deskripsi: data.deskripsi || data.catatan || 'Tidak ada deskripsi tersedia'
                     });
                 });
+
+                // tandai tugas yang baru muncul
+                const nowTs = Date.now();
+                nextTasks.forEach(t => {
+                    if (!knownTaskIds.has(t.id)) {
+                        knownTaskIds.add(t.id);
+                        recentTaskAddedAt.set(t.id, nowTs);
+                    }
+                });
+
+                tasksData = nextTasks;
                 
                 if (currentView === 'main') {
                     renderAllData();
                     updateStatistics();
                 }
+                updateRecentBadge();
             });
         }
 
@@ -391,15 +425,31 @@
                 return;
             }
 
-            // Sort by deadline and status
-            const sortedTasks = [...tasksData].sort((a, b) => {
-                if (a.status !== b.status) {
-                    return a.status === 'belum' ? -1 : 1;
-                }
-                return new Date(a.deadline) - new Date(b.deadline);
-            });
+            const ONE_DAY = 24 * 60 * 60 * 1000;
+            const nowTs = Date.now();
+            const recentIds = Array.from(recentTaskAddedAt.entries())
+                .filter(([id, ts]) => nowTs - ts <= ONE_DAY)
+                .map(([id]) => id);
 
-            container.innerHTML = sortedTasks.map(task => {
+            let list = [];
+            if (currentTasksFilter === 'recent') {
+                list = tasksData.filter(t => recentIds.includes(t.id));
+                if (list.length === 0) {
+                    container.innerHTML = '<div class="error">Tidak ada tugas terbaru</div>';
+                    return;
+                }
+                list.sort((a, b) => (recentTaskAddedAt.get(b.id) || 0) - (recentTaskAddedAt.get(a.id) || 0));
+            } else {
+                // Sort by deadline and status
+                list = [...tasksData].sort((a, b) => {
+                    if (a.status !== b.status) {
+                        return a.status === 'belum' ? -1 : 1;
+                    }
+                    return new Date(a.deadline) - new Date(b.deadline);
+                });
+            }
+
+            container.innerHTML = list.map(task => {
                 const isCompleted = task.status === 'selesai';
                 const deadline = new Date(task.deadline);
                 const now = new Date();
@@ -437,6 +487,19 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        function updateRecentBadge() {
+            const badge = document.getElementById('recentTasksCount');
+            if (!badge) return;
+            const ONE_DAY = 24 * 60 * 60 * 1000;
+            const nowTs = Date.now();
+            // bersihkan yang kadaluarsa
+            for (const [id, ts] of recentTaskAddedAt.entries()) {
+                if (nowTs - ts > ONE_DAY) recentTaskAddedAt.delete(id);
+            }
+            const count = Array.from(recentTaskAddedAt.values()).filter(ts => nowTs - ts <= ONE_DAY).length;
+            badge.textContent = count > 0 ? `(${count})` : '';
         }
 
         function renderCoursesList() {
