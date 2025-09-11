@@ -5,6 +5,16 @@
             padding: 0;
             box-sizing: border-box;
         }
+        #header {
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+    position: relative;
+    z-index: 1; /* lebih rendah dari card */
+}
+.glass-card, .card, .card-full {
+    position: relative;
+    z-index: 5; /* pastikan lebih tinggi */
+}
 
         :root {
             --bg-primary: #0F111A;

@@ -97,39 +97,21 @@
         }
 
         function setupParallaxEffect() {
-            const header = document.getElementById('header');
-            
-            window.addEventListener('scroll', () => {
-                const scrollY = window.scrollY;
-                const headerRect = header.getBoundingClientRect();
-                const headerTop = headerRect.top + scrollY;
-                
-                // Calculate when header should start transitioning
-                const triggerPoint = headerTop - 100;
-                
-                if (scrollY > triggerPoint && !header.classList.contains('scrolled')) {
-                    header.classList.add('scrolled');
-                } else if (scrollY <= triggerPoint && header.classList.contains('scrolled')) {
-                    header.classList.remove('scrolled');
-                }
-                
-                // Enhanced parallax effect for header content
-                const timeElement = document.getElementById('currentTime');
-                const dateElement = document.getElementById('currentDate');
-                
-                // Calculate parallax based on distance from header
-                const parallaxIntensity = Math.max(0, (scrollY - triggerPoint) * 0.1);
-                
-                if (scrollY > triggerPoint) {
-                    timeElement.style.transform = `translateY(${parallaxIntensity}px) scale(${1 - parallaxIntensity * 0.01})`;
-                    dateElement.style.transform = `translateY(${parallaxIntensity * 0.8}px)`;
-                } else {
-                    // Smooth reset when scrolling back up
-                    timeElement.style.transform = 'translateY(0px) scale(1)';
-                    dateElement.style.transform = 'translateY(0px)';
-                }
+    const header = document.getElementById('header');
+    let latestScroll = 0;
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+        latestScroll = window.scrollY;
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                header.style.transform = `translateY(${latestScroll * 0.3}px)`;
+                ticking = false;
             });
+            ticking = true;
         }
+    });
+}
 
         function setupPullToRefresh() {
             let startY = 0;
