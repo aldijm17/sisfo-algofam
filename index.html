@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoFam-25</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/minimal-header-style.css">
-      <!-- PWA Manifest -->
+
+          <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/index-style.css">
     <!-- Meta tags untuk PWA -->
     <meta name="theme-color" content="#0f1419">
     <meta name="mobile-web-app-capable" content="yes">
@@ -15,180 +14,221 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AlgoFam-25">
     
-    <!-- Icons untuk berbagai perangkat -->
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <title>AlgoFam-25</title>
+    <style>
+    </style>
 </head>
 <body>
-    <!-- Subtle stars -->
-    <div class="stars" id="stars"></div>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
 
     <!-- Connection Status -->
     <div class="connection-status">
         <div class="status-dot" id="firebaseStatus"></div>
+        <span id="connectionText">Menghubungkan...</span>
     </div>
 
-    <!-- Minimal Header -->
-    <header class="header">
-        <div class="header-content">
-            <button class="back-btn" id="backBtn" onclick="goBack()">← back</button>
-            <div class="logo" id="logoText">SPACECLASSROOM</div>
-            <div class="time-display" id="currentTime">--:--</div>
-        </div>
+    <!-- Search Bar - Now at top -->
+    <div class="search-container">
+        <input type="text" class="search-bar" id="searchBar" placeholder="Cari mata kuliah, tugas, atau dosen...">
+        <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <!-- Repositioned Header - Now between search and cards -->
+    <header class="header" id="header">
+        <div class="dynamic-icon" id="dynamicIcon" onclick="changeIcon()">🚀</div>
+        <div class="current-time" id="currentTime">--:--</div>
+        <div class="current-date" id="currentDate">Memuat...</div>
     </header>
 
-    <div class="motivation">
-  🚀 "Keep learning, keep growing — your code can reach the stars!" ✨
+    <!-- Pull to Refresh Indicator -->
+    <div class="pull-refresh" id="pullRefresh">
+        <div>Tarik ke atas untuk muat ulang</div>
     </div>
-
-    <!-- Clean Navigation -->
-    <nav class="nav" id="mainNav">
-        <button class="nav-item active" onclick="switchTab('overview')">overview</button>
-        <button class="nav-item" onclick="switchTab('schedule')">schedule</button>
-        <button class="nav-item" onclick="switchTab('tasks')">tasks</button>
-        <button class="nav-item" onclick="switchTab('courses')">courses</button>
-    </nav>
 
     <!-- Main Content -->
     <main class="main">
-        <!-- Overview -->
-        <section id="overview" class="tab-content active">
-            <div class="card">
-                <div class="card-title">
-                    status
-                    <span class="badge" id="overviewBadge">loading</span>
+        <!-- Beranda Tab -->
+        <section id="beranda" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingTasksCount">0</div>
+                    <div class="stat-label">Tugas Tertunda</div>
                 </div>
-                <div class="terminal" id="systemStatus">initializing space classroom...</div>
-                <div class="progress">
-                    <div class="progress-fill" id="progressBar" style="width: 0%;"></div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayClassesCount">0</div>
+                    <div class="stat-label">Kelas Hari Ini</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCoursesCount">0</div>
+                    <div class="stat-label">Mata Kuliah</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completionPercentage">0%</div>
+                    <div class="stat-label">Penyelesaian</div>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-title">today's classes</div>
-                <div id="todayClasses">
-                    <div class="loading">loading schedule data...</div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Progress Keseluruhan</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-title">pending tasks</div>
+            <div class="glass-card">
+                <h2 style="margin-bottom: 1rem; color: var(--accent-cyan);">Jadwal Hari Ini</h2>
+                <div id="todaySchedule">
+                    <div class="loading">Memuat jadwal hari ini...</div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2 style="margin-bottom: 1rem; color: var(--accent-purple);">Tugas Tertunda</h2>
                 <div id="pendingTasks">
-                    <div class="loading">loading task data...</div>
+                    <div class="loading">Memuat tugas tertunda...</div>
                 </div>
             </div>
         </section>
 
-        <!-- Schedule -->
-        <section id="schedule" class="tab-content">
-            <div class="day-filter" id="dayFilter">
-                <button class="day-btn active" data-day="all">all</button>
-                <button class="day-btn" data-day="Senin">sen</button>
-                <button class="day-btn" data-day="Selasa">sel</button>
-                <button class="day-btn" data-day="Rabu">rab</button>
-                <button class="day-btn" data-day="Kamis">kam</button>
-                <button class="day-btn" data-day="Jumat">jum</button>
-                <button class="day-btn" data-day="Sabtu">sab</button>
-            </div>
-            
-            <div class="card">
-                <div class="card-title">
-                    class schedule
-                    <span class="badge" id="scheduleBadge">loading</span>
+        <!-- Jadwal Tab -->
+        <section id="jadwal" class="tab-content">
+            <div class="glass-card">
+                <h2 style="margin-bottom: 1rem; color: var(--accent-cyan);">Jadwal Kuliah</h2>
+                <div class="tab-indicator">
+                    <div class="tab-dot" data-day="Senin"></div>
+                    <div class="tab-dot" data-day="Selasa"></div>
+                    <div class="tab-dot" data-day="Rabu"></div>
+                    <div class="tab-dot" data-day="Kamis"></div>
+                    <div class="tab-dot" data-day="Jumat"></div>
+                    <div class="tab-dot" data-day="Sabtu"></div>
+                    <div class="tab-dot" data-day="Minggu"></div>
                 </div>
                 <div id="scheduleList">
-                    <div class="loading">loading schedule from firebase...</div>
+                    <div class="loading">Memuat jadwal dari Firebase...</div>
                 </div>
             </div>
         </section>
 
-        <!-- Tasks -->
-        <section id="tasks" class="tab-content">
-            <div class="card">
-                <div class="card-title">
-                    assignment list
-                    <span class="badge" id="tasksBadge">loading</span>
-                </div>
+        <!-- Tugas Tab -->
+        <section id="tugas" class="tab-content">
+            <div class="glass-card">
+                <h2 style="margin-bottom: 1rem; color: var(--accent-orange);">Daftar Tugas</h2>
                 <div id="tasksList">
-                    <div class="loading">loading tasks from firebase...</div>
+                    <div class="loading">Memuat tugas dari Firebase...</div>
                 </div>
             </div>
         </section>
 
-        <!-- Courses -->
-        <section id="courses" class="tab-content">
-            <div class="card">
-                <div class="card-title">
-                    enrolled courses
-                    <span class="badge" id="coursesBadge">loading</span>
-                </div>
+        <!-- Mata Kuliah Tab -->
+        <section id="matakuliah" class="tab-content">
+            <div class="glass-card">
+                <h2 style="margin-bottom: 1rem; color: var(--accent-purple);">Mata Kuliah Terdaftar</h2>
                 <div id="coursesList">
-                    <div class="loading">loading courses from firebase...</div>
+                    <div class="loading">Memuat mata kuliah dari Firebase...</div>
                 </div>
             </div>
         </section>
 
-        <!-- Task Detail View -->
+        <!-- Detail Views -->
         <section id="taskDetail" class="tab-content">
-            <div class="task-detail-card">
-                <div class="task-detail-title" id="taskDetailTitle">Task Details</div>
-                
-                <div class="task-field">
-                    <span class="task-field-label">Task</span>
-                    <div class="task-field-value" id="taskDetailTask">-</div>
+            <div class="detail-header">
+                <button class="back-btn" onclick="goBack()">← Kembali</button>
+                <div class="detail-title">Detail Tugas</div>
+            </div>
+            <div class="glass-card">
+                <div class="detail-content">
+                    <div class="detail-field">
+                        <div class="field-label">Deskripsi</div>
+                        <div class="field-value" id="taskDetailDescription">Tidak ada deskripsi tersedia</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Catatan</div>
+                        <div class="field-value" id="taskDetailNotes">Tidak ada catatan tambahan</div>
+                    </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="task-field">
-                    <span class="task-field-label">Description</span>
-                    <div class="task-description" id="taskDetailDescription">No description available</div>
+        <section id="scheduleDetail" class="tab-content">
+            <div class="detail-header">
+                <button class="back-btn" onclick="goBack()">← Kembali</button>
+                <div class="detail-title">Detail Jadwal</div>
+            </div>
+            <div class="glass-card">
+                <div class="detail-content">
+                    <div class="detail-field">
+                        <div class="field-label">Mata Kuliah</div>
+                        <div class="field-value" id="scheduleDetailCourse">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Hari</div>
+                        <div class="field-value" id="scheduleDetailDay">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Waktu</div>
+                        <div class="field-value" id="scheduleDetailTime">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Ruang</div>
+                        <div class="field-value" id="scheduleDetailRoom">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Dosen</div>
+                        <div class="field-value" id="scheduleDetailInstructor">-</div>
+                    </div>
                 </div>
+            </div>
+        </section>
 
-
-                <div class="task-field">
-                    <span class="task-field-label">Deadline</span>
-                    <div class="task-field-value" id="taskDetailDeadline">-</div>
-                </div>
-
-                <div class="task-field">
-                    <span class="task-field-label">Course</span>
-                    <div class="task-field-value" id="taskDetailCourse">-</div>
-                </div>
-
-                <div class="task-field">
-                    <span class="task-field-label">Instructor</span>
-                    <div class="task-field-value" id="taskDetailInstructor">-</div>
-                </div>
-                <div class="task-field">
-                    <span class="task-field-label">Notes</span>
-                    <div class="task-description" id="taskDetailNotes">No additional notes</div>
+        <section id="courseDetail" class="tab-content">
+            <div class="detail-header">
+                <button class="back-btn" onclick="goBack()">← Kembali</button>
+                <div class="detail-title">Detail Mata Kuliah</div>
+            </div>
+            <div class="glass-card">
+                <div class="detail-content">
+                    <div class="detail-field">
+                        <div class="field-label">Nama Mata Kuliah</div>
+                        <div class="field-value" id="courseDetailName">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Dosen Pengampu</div>
+                        <div class="field-value" id="courseDetailInstructor">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Jumlah Sesi per Minggu</div>
+                        <div class="field-value" id="courseDetailSessions">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Tugas Tertunda</div>
+                        <div class="field-value" id="courseDetailTasks">-</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="field-label">Persentase Penyelesaian</div>
+                        <div class="field-value" id="courseDetailCompletion">-</div>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- FAB -->
-    <button class="fab" onclick="refreshData()">↻</button>
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('beranda')">Beranda</button>
+        <button class="nav-item" onclick="switchTab('jadwal')">Jadwal</button>
+        <button class="nav-item" onclick="switchTab('tugas')">Tugas</button>
+        <button class="nav-item" onclick="switchTab('matakuliah')">Mata Kuliah</button>
+    </nav>
 
-    <!-- Firebase Configuration -->
-    <script src="js/env.js"></script>
-    <!-- main JavaScript -->
-    <script type="module" src="js/script.js"></script>
-    <script type="module" src="js/minimal-header-animation.js"></script>
-    <script>
-        if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./sw.js")
-            .then(() => console.log("Service Worker registered"))
-            .catch((err) => console.error("SW failed:", err));
-        }
-        </script>
+    <!-- Toast Notification Template -->
+    <div class="toast" id="toast"></div>
 
+    <script type="module" src="js/index-script.js"></script>
 </body>
-<footer class="footer">
-  <div class="social-links">
-   <!--  <a href="https://github.com/" target="_blank">🐙 GitHub</a> |
-    <a href="https://twitter.com/" target="_blank">🐦 Twitter</a> | -->
-    <a href="https://www.instagram.com/algofam.25" target="_blank">📸 Instagram</a>
-  </div>
-  <p>© 2025 ALGOFAMS-25 · All Rights Reserved</p>
-</footer>
 </html>

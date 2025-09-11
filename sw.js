@@ -2,6 +2,7 @@ const CACHE_NAME = "Sisfo-AlgoFam-v1";
 const urlsToCache = [
   "./",
   "./index.html",
+  "./sisfolite.html",
   "./css/style.css",
   "./js/script.js",
   "./js/minimal-header-snimation.js",

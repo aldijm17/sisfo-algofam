@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoFam-25</title>
+    <link rel="stylesheet" href="css/sisfolite-style.css">
+    <link rel="stylesheet" href="css/minimal-header-style.css">
+      <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Meta tags untuk PWA -->
+    <meta name="theme-color" content="#0f1419">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AlgoFam-25">
+    
+    <!-- Icons untuk berbagai perangkat -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Subtle stars -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Connection Status -->
+    <div class="connection-status">
+        <div class="status-dot" id="firebaseStatus"></div>
+    </div>
+
+    <!-- Minimal Header -->
+    <header class="header">
+        <div class="header-content">
+            <button class="back-btn" id="backBtn" onclick="goBack()">← back</button>
+            <div class="logo" id="logoText">SPACECLASSROOM</div>
+            <div class="time-display" id="currentTime">--:--</div>
+        </div>
+    </header>
+
+    <div class="motivation">
+  🚀 "Keep learning, keep growing — your code can reach the stars!" ✨
+    </div>
+
+    <!-- Clean Navigation -->
+    <nav class="nav" id="mainNav">
+        <button class="nav-item active" onclick="switchTab('overview')">overview</button>
+        <button class="nav-item" onclick="switchTab('schedule')">schedule</button>
+        <button class="nav-item" onclick="switchTab('tasks')">tasks</button>
+        <button class="nav-item" onclick="switchTab('courses')">courses</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Overview -->
+        <section id="overview" class="tab-content active">
+            <div class="card">
+                <div class="card-title">
+                    status
+                    <span class="badge" id="overviewBadge">loading</span>
+                </div>
+                <div class="terminal" id="systemStatus">initializing space classroom...</div>
+                <div class="progress">
+                    <div class="progress-fill" id="progressBar" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">today's classes</div>
+                <div id="todayClasses">
+                    <div class="loading">loading schedule data...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">pending tasks</div>
+                <div id="pendingTasks">
+                    <div class="loading">loading task data...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule -->
+        <section id="schedule" class="tab-content">
+            <div class="day-filter" id="dayFilter">
+                <button class="day-btn active" data-day="all">all</button>
+                <button class="day-btn" data-day="Senin">sen</button>
+                <button class="day-btn" data-day="Selasa">sel</button>
+                <button class="day-btn" data-day="Rabu">rab</button>
+                <button class="day-btn" data-day="Kamis">kam</button>
+                <button class="day-btn" data-day="Jumat">jum</button>
+                <button class="day-btn" data-day="Sabtu">sab</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    class schedule
+                    <span class="badge" id="scheduleBadge">loading</span>
+                </div>
+                <div id="scheduleList">
+                    <div class="loading">loading schedule from firebase...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tasks -->
+        <section id="tasks" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    assignment list
+                    <span class="badge" id="tasksBadge">loading</span>
+                </div>
+                <div id="tasksList">
+                    <div class="loading">loading tasks from firebase...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Courses -->
+        <section id="courses" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    enrolled courses
+                    <span class="badge" id="coursesBadge">loading</span>
+                </div>
+                <div id="coursesList">
+                    <div class="loading">loading courses from firebase...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task Detail View -->
+        <section id="taskDetail" class="tab-content">
+            <div class="task-detail-card">
+                <div class="task-detail-title" id="taskDetailTitle">Task Details</div>
+                
+                <div class="task-field">
+                    <span class="task-field-label">Task</span>
+                    <div class="task-field-value" id="taskDetailTask">-</div>
+                </div>
+
+                <div class="task-field">
+                    <span class="task-field-label">Description</span>
+                    <div class="task-description" id="taskDetailDescription">No description available</div>
+                </div>
+
+
+                <div class="task-field">
+                    <span class="task-field-label">Deadline</span>
+                    <div class="task-field-value" id="taskDetailDeadline">-</div>
+                </div>
+
+                <div class="task-field">
+                    <span class="task-field-label">Course</span>
+                    <div class="task-field-value" id="taskDetailCourse">-</div>
+                </div>
+
+                <div class="task-field">
+                    <span class="task-field-label">Instructor</span>
+                    <div class="task-field-value" id="taskDetailInstructor">-</div>
+                </div>
+                <div class="task-field">
+                    <span class="task-field-label">Notes</span>
+                    <div class="task-description" id="taskDetailNotes">No additional notes</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FAB -->
+    <button class="fab" onclick="refreshData()">↻</button>
+
+    <!-- Firebase Configuration -->
+    <script src="js/env.js"></script>
+    <!-- main JavaScript -->
+    <script type="module" src="js/sisfolite-script.js"></script>
+    <script type="module" src="js/minimal-header-animation.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js")
+            .then(() => console.log("Service Worker registered"))
+            .catch((err) => console.error("SW failed:", err));
+        }
+        </script>
+
+</body>
+<footer class="footer">
+  <div class="social-links">
+   <!--  <a href="https://github.com/" target="_blank">🐙 GitHub</a> |
+    <a href="https://twitter.com/" target="_blank">🐦 Twitter</a> | -->
+    <a href="https://www.instagram.com/algofam.25" target="_blank">📸 Instagram</a>
+  </div>
+  <p>© 2025 ALGOFAMS-25 · All Rights Reserved</p>
+</footer>
+</html>
