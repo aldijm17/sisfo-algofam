@@ -2,6 +2,12 @@ const CACHE_NAME = "Sisfo-AlgoFam-v1";
 const urlsToCache = [
   "./",
   "./index.html",
+  "./admin/index.html",
+  "./admin/add.html",
+  "./admin/edit.html",
+  "./admin/js/env.js",
+  "./admin/js/firebase.js",
+  "./admin/js/script.js",
   "./sisfolite.html",
   "./css/style.css",
   "./js/script.js",

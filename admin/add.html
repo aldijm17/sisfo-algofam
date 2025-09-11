@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/index-style.css">
+    <!-- Meta tags untuk PWA -->
+    <meta name="theme-color" content="#0f1419">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AlgoFam-25">
+    
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Tambah Tugas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Reset dasar */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1, h2 {
+      color: #2c3e50;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    /* Form styling */
+    .form-container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-submit {
+      background-color: #2ecc71;
+      color: white;
+      width: 100%;
+    }
+
+    .btn-submit:hover {
+      background-color: #27ae60;
+    }
+
+    .btn-back {
+      background-color: #95a5a6;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 20px;
+      padding: 10px 15px;
+    }
+
+    .btn-back:hover {
+      background-color: #7f8c8d;
+    }
+
+    .btn i {
+      margin-right: 8px;
+    }
+
+    /* Responsive design */
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+      
+      .form-container {
+        padding: 20px 15px;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="btn btn-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+  
+  <h2>➕ Tambah Tugas Baru</h2>
+  
+  <div class="form-container">
+    <form id="taskForm">
+      <div class="form-group">
+        <label for="tugas">Nama Tugas *</label>
+        <input type="text" id="tugas" name="tugas" placeholder="Masukkan nama tugas" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="deskripsi">Deskripsi Tugas</label>
+        <textarea id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi tugas (opsional)"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="deadline">Deadline *</label>
+        <input type="date" id="deadline" name="deadline" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="matkul">Mata Kuliah *</label>
+        <input type="text" id="matkul" name="matkul" placeholder="Masukkan nama mata kuliah" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="dosen">Dosen Pengampu *</label>
+        <input type="text" id="dosen" name="dosen" placeholder="Masukkan nama dosen" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="catatan">Catatan Tambahan</label>
+        <textarea id="catatan" name="catatan" placeholder="Masukkan catatan tambahan (opsional)"></textarea>
+      </div>
+      
+      <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Simpan Tugas</button>
+    </form>
+  </div>
+
+  <script src="js/env.js"></script>
+  <script type="module">
+    import { db } from './js/firebase.js';
+    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const form = document.getElementById('taskForm');
+    
+    // Set default value untuk deadline (hari ini)
+    document.getElementById('deadline').valueAsDate = new Date();
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      
+      try {
+        // Tampilkan loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+        
+        const data = Object.fromEntries(new FormData(form));
+        data.status = "belum";
+        
+        await addDoc(collection(db, "tugas"), data);
+        alert("✅ Tugas berhasil ditambahkan!");
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Error adding task:", error);
+        alert("❌ Gagal menambahkan tugas. Silakan coba lagi.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    });
+  </script>
+</body>
+</html>

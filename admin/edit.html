@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/index-style.css">
+    <!-- Meta tags untuk PWA -->
+    <meta name="theme-color" content="#0f1419">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AlgoFam-25">
+    
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Edit Tugas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Reset dasar */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1, h2 {
+      color: #2c3e50;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    /* Form styling */
+    .form-container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-submit {
+      background-color: #3498db;
+      color: white;
+      width: 100%;
+    }
+
+    .btn-submit:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-back {
+      background-color: #95a5a6;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 20px;
+      padding: 10px 15px;
+    }
+
+    .btn-back:hover {
+      background-color: #7f8c8d;
+    }
+
+    .btn i {
+      margin-right: 8px;
+    }
+
+    /* Status indicator */
+    .status-indicator {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-left: 10px;
+    }
+
+    .status-belong {
+      background-color: #ffebee;
+      color: #e53935;
+    }
+
+    .status-selesai {
+      background-color: #e8f5e9;
+      color: #43a047;
+    }
+
+    /* Responsive design */
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+      
+      .form-container {
+        padding: 20px 15px;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="btn btn-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+  
+  <h2>✏️ Edit Tugas <span id="statusIndicator" class="status-indicator"></span></h2>
+  
+  <div class="form-container">
+    <form id="editForm">
+      <div class="form-group">
+        <label for="tugas">Nama Tugas *</label>
+        <input type="text" id="tugas" name="tugas" placeholder="Masukkan nama tugas" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="deskripsi">Deskripsi Tugas</label>
+        <textarea id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi tugas (opsional)"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="deadline">Deadline *</label>
+        <input type="date" id="deadline" name="deadline" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="matkul">Mata Kuliah *</label>
+        <input type="text" id="matkul" name="matkul" placeholder="Masukkan nama mata kuliah" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="dosen">Dosen Pengampu *</label>
+        <input type="text" id="dosen" name="dosen" placeholder="Masukkan nama dosen" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="catatan">Catatan Tambahan</label>
+        <textarea id="catatan" name="catatan" placeholder="Masukkan catatan tambahan (opsional)"></textarea>
+      </div>
+      
+      <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Perbarui Tugas</button>
+    </form>
+  </div>
+
+  <script src="js/env.js"></script>
+  <script type="module">
+    import { db } from './js/firebase.js';
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const form = document.getElementById("editForm");
+    const statusIndicator = document.getElementById("statusIndicator");
+
+    if (!id) {
+      alert("ID tugas tidak valid!");
+      window.location.href = "index.html";
+    }
+
+    async function loadData() {
+      try {
+        const snap = await getDoc(doc(db, "tugas", id));
+        
+        if (snap.exists()) {
+          const t = snap.data();
+          
+          // Isi form dengan data yang ada
+          form.tugas.value = t.tugas || "";
+          form.deskripsi.value = t.deskripsi || "";
+          form.deadline.value = t.deadline || "";
+          form.matkul.value = t.matkul || "";
+          form.dosen.value = t.dosen || "";
+          form.catatan.value = t.catatan || "";
+          
+          // Tampilkan status
+          if (t.status) {
+            statusIndicator.textContent = t.status === "belum" ? "Belum Selesai" : "Selesai";
+            statusIndicator.className = `status-indicator ${t.status === "belum" ? "status-belong" : "status-selesai"}`;
+          }
+        } else {
+          alert("Tugas tidak ditemukan!");
+          window.location.href = "index.html";
+        }
+      } catch (error) {
+        console.error("Error loading task:", error);
+        alert("Gagal memuat data tugas!");
+        window.location.href = "index.html";
+      }
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      
+      try {
+        // Tampilkan loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memperbarui...';
+        
+        const data = Object.fromEntries(new FormData(form));
+        await updateDoc(doc(db, "tugas", id), data);
+        
+        alert("✅ Tugas berhasil diperbarui!");
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Error updating task:", error);
+        alert("❌ Gagal memperbarui tugas. Silakan coba lagi.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
